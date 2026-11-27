@@ -214,15 +214,21 @@ namespace VfxEditor.ScdFormat {
         public override void Dispose() => Audio.ForEach( x => x.Dispose() );
 
         public async void Import( string path, ScdAudioEntry entry ) {
-            await Task.Run( () => {
-                var newEntry = entry.Data switch {
-                    ScdAdpcm _ => ( Path.GetExtension( path ) == ".wav" ) ? ScdAdpcm.ImportWav( path, entry ) : ScdVorbis.ImportOgg( path, entry ),
-                    ScdVorbis _ => ( Path.GetExtension( path ) == ".wav" ) ? ScdVorbis.ImportWav( path, entry ) : ScdVorbis.ImportOgg( path, entry ),
-                    _ => null
-                };
+            // async void: an escaping exception kills the game process
+            try {
+                await Task.Run( () => {
+                    var newEntry = entry.Data switch {
+                        ScdAdpcm _ => ( Path.GetExtension( path ) == ".wav" ) ? ScdAdpcm.ImportWav( path, entry ) : ScdVorbis.ImportOgg( path, entry ),
+                        ScdVorbis _ => ( Path.GetExtension( path ) == ".wav" ) ? ScdVorbis.ImportWav( path, entry ) : ScdVorbis.ImportOgg( path, entry ),
+                        _ => null
+                    };
 
-                if( newEntry != null ) Replace( entry, newEntry );
-            } );
+                    if( newEntry != null ) Replace( entry, newEntry );
+                } );
+            }
+            catch( Exception e ) {
+                Dalamud.Error( e, $"Could not import {path} (.ogg must be Vorbis, not Opus)" );
+            }
         }
 
         private static int PopulateOffsetPlaceholders<T>( BinaryWriter writer, List<T> items, bool defaultZero ) {
