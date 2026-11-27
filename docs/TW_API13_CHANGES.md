@@ -16,15 +16,23 @@
 
 ## Build and package
 
-Build command: Not recorded.
+Build command, run from the repository root:
 
-Last verified build: Not recorded.
+```bash
+dotnet restore VFXEditor/VFXEditor.csproj --locked-mode "-p:DalamudLibPath=$DALAMUD_HOME/" --nologo
+dotnet build VFXEditor/VFXEditor.csproj -c Release --no-restore "-p:DalamudLibPath=$DALAMUD_HOME/" --nologo
+```
 
-Deployed copy (manifest file dated 2026-10-25):
+Last verified build: 2026-11-27, commit `059bb99ca`:
 
 - `DalamudApiLevel`: 13.
-- `AssemblyVersion`: 1.9.2.8, the base's version (`tw/api13-zh-tw` is 1.9.2.10).
-- Whether it was built with the two changes above: Not recorded.
+- `AssemblyVersion`: 1.9.2.8.
+- Package: `VFXEditor/bin/Release/VFXEditor/latest.zip`.
+- `latest.zip` SHA-256: `61088db5c37257a397d2be16a6d16aee0537c91f5626663473add869423a09bb`.
+
+The `AssemblyVersion` is the base's version; `tw/api13-zh-tw` is 1.9.2.10.
+
+Deployed on 2026-11-27 to `<deployRoot>/VFXEditor`, every file verified by SHA-256 against the Release output, with the package subfolder excluded. `<deployRoot>` is the machine's plugin collection folder, recorded in the home repo's gitignored `.local/dalamud.json`.
 
 ## Runtime verification
 
